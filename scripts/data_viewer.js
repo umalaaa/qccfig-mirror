@@ -1,28 +1,70 @@
 const predefinedKeys = [
-  { key: "nodeloc_auth_cookie", label: "NodeLoc Cookie" },
-  { key: "nodeloc_auth_auth", label: "NodeLoc Auth" },
-  { key: "nodeseek_auth_cookie", label: "NodeSeek Cookie" },
-  { key: "nodeseek_auth_auth", label: "NodeSeek Auth" },
-  { key: "RESP_barventory", label: "Barventory Response" },
-  { key: "REQ_barventory_raw", label: "Barventory Request Raw" },
-  { key: "RESP_barventory_raw", label: "Barventory Response Raw" }
+  { key: "nodeloc_auth_cookie", label: "NodeLoc Cookie", isArray: false },
+  { key: "nodeloc_auth_auth", label: "NodeLoc Auth", isArray: false },
+  { key: "nodeseek_auth_cookie", label: "NodeSeek Cookie", isArray: false },
+  { key: "nodeseek_auth_auth", label: "NodeSeek Auth", isArray: false },
+  { key: "RESP_barventory", label: "Barventory Response", isArray: true }
 ];
 
-let allData = [];
+let allCards = [];
 let hasDataCount = 0;
 let emptyCount = 0;
+let cardIndex = 0;
 
 predefinedKeys.forEach(item => {
   const value = $prefs.valueForKey(item.key);
   const hasData = !!value;
-  if (hasData) hasDataCount++;
-  else emptyCount++;
-  allData.push({
-    key: item.key,
-    label: item.label,
-    value: value || "",
-    hasData: hasData
-  });
+  
+  if (item.isArray && hasData) {
+    try {
+      const arr = JSON.parse(value);
+      if (Array.isArray(arr) && arr.length > 0) {
+        hasDataCount++;
+        arr.forEach((record, i) => {
+          allCards.push({
+            key: item.key + "[" + i + "]",
+            label: item.label + " #" + (i + 1),
+            value: JSON.stringify(record),
+            hasData: true,
+            isArrayItem: true,
+            parentKey: item.key,
+            index: cardIndex++
+          });
+        });
+      } else {
+        emptyCount++;
+        allCards.push({
+          key: item.key,
+          label: item.label,
+          value: "",
+          hasData: false,
+          isArrayItem: false,
+          index: cardIndex++
+        });
+      }
+    } catch (e) {
+      hasDataCount++;
+      allCards.push({
+        key: item.key,
+        label: item.label,
+        value: value,
+        hasData: true,
+        isArrayItem: false,
+        index: cardIndex++
+      });
+    }
+  } else {
+    if (hasData) hasDataCount++;
+    else emptyCount++;
+    allCards.push({
+      key: item.key,
+      label: item.label,
+      value: value || "",
+      hasData: hasData,
+      isArrayItem: false,
+      index: cardIndex++
+    });
+  }
 });
 
 function escapeHtml(str) {
@@ -40,17 +82,19 @@ function formatValue(val) {
   }
 }
 
-const cardsHtml = allData.map((item, index) => {
+const cardsHtml = allCards.map((item) => {
   const statusClass = item.hasData ? "has-data" : "empty";
   const statusText = item.hasData ? "有数据" : "空";
   const valueDisplay = item.hasData 
     ? '<div class="value-box">' + formatValue(item.value) + '</div>'
     : '<div class="empty-box">暂无数据，请先访问对应网站</div>';
   const copyValueBtn = item.hasData
-    ? '<button class="btn btn-value" onclick="copyValue(' + index + ')">复制 Value</button>'
+    ? '<button class="btn btn-value" onclick="copyValue(' + item.index + ')">复制 Value</button>'
     : '<button class="btn btn-value" disabled>无数据</button>';
   
-  return '<div class="card">' +
+  const cardClass = item.isArrayItem ? "card array-item" : "card";
+  
+  return '<div class="' + cardClass + '">' +
     '<div class="card-header">' +
       '<div>' +
         '<div class="card-label">' + item.label + '</div>' +
@@ -61,14 +105,14 @@ const cardsHtml = allData.map((item, index) => {
     '<div class="card-body">' +
       valueDisplay +
       '<div class="btn-row">' +
-        '<button class="btn btn-key" onclick="copyKey(' + index + ')">复制 Key</button>' +
+        '<button class="btn btn-key" onclick="copyKey(' + item.index + ')">复制 Key</button>' +
         copyValueBtn +
       '</div>' +
     '</div>' +
   '</div>';
 }).join("");
 
-const valuesJson = JSON.stringify(allData.map(d => ({ key: d.key, value: d.value })));
+const valuesJson = JSON.stringify(allCards.map(d => ({ key: d.key, value: d.value })));
 
 const html = '<!DOCTYPE html>' +
 '<html lang="zh-CN">' +
@@ -88,6 +132,7 @@ const html = '<!DOCTYPE html>' +
 '.stat-num.red { color: #dc2626; }' +
 '.stat-label { font-size: 11px; color: #86868b; margin-top: 2px; }' +
 '.card { background: white; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }' +
+'.card.array-item { border-left: 4px solid #007aff; }' +
 '.card-header { padding: 14px 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }' +
 '.card-label { font-size: 15px; font-weight: 600; color: #1d1d1f; }' +
 '.card-key { font-size: 12px; color: #86868b; font-family: monospace; margin-top: 2px; }' +

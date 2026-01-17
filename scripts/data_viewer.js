@@ -6,127 +6,76 @@ const predefinedKeys = [
   { key: "RESP_barventory", label: "Barventory Response", isArray: true }
 ];
 
-const allKeysForClear = predefinedKeys.map(k => k.key);
-
-let allCards = [];
+let simpleCards = [];
+let barventoryData = [];
 let hasDataCount = 0;
 let emptyCount = 0;
-let cardIndex = 0;
 
 predefinedKeys.forEach(item => {
   const value = $prefs.valueForKey(item.key);
   const hasData = !!value;
   
-  if (item.isArray && hasData) {
-    try {
-      const arr = JSON.parse(value);
-      if (Array.isArray(arr) && arr.length > 0) {
-        hasDataCount++;
-        arr.forEach((record, i) => {
-          allCards.push({
-            key: item.key + "[" + i + "]",
-            label: item.label + " #" + (i + 1),
-            value: JSON.stringify(record),
-            hasData: true,
-            isArrayItem: true,
-            parentKey: item.key,
-            index: cardIndex++
-          });
-        });
-      } else {
+  if (item.isArray) {
+    if (hasData) {
+      try {
+        const arr = JSON.parse(value);
+        if (Array.isArray(arr) && arr.length > 0) {
+          hasDataCount++;
+          barventoryData = arr;
+        } else {
+          emptyCount++;
+        }
+      } catch (e) {
         emptyCount++;
-        allCards.push({
-          key: item.key,
-          label: item.label,
-          value: "",
-          hasData: false,
-          isArrayItem: false,
-          index: cardIndex++
-        });
       }
-    } catch (e) {
-      hasDataCount++;
-      allCards.push({
-        key: item.key,
-        label: item.label,
-        value: value,
-        hasData: true,
-        isArrayItem: false,
-        index: cardIndex++
-      });
+    } else {
+      emptyCount++;
     }
   } else {
     if (hasData) hasDataCount++;
     else emptyCount++;
-    allCards.push({
+    simpleCards.push({
       key: item.key,
       label: item.label,
       value: value || "",
-      hasData: hasData,
-      isArrayItem: false,
-      index: cardIndex++
+      hasData: hasData
     });
   }
 });
 
 function escapeHtml(str) {
   if (!str) return "";
-  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
-function formatValue(val) {
-  if (!val) return "";
-  try {
-    const obj = JSON.parse(val);
-    return escapeHtml(JSON.stringify(obj, null, 2));
-  } catch (e) {
-    return escapeHtml(val);
-  }
+function escapeJs(str) {
+  if (!str) return "";
+  return str.replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\r/g, "\\r");
 }
 
-const cardsHtml = allCards.map((item) => {
+const simpleCardsHtml = simpleCards.map((item, idx) => {
   const statusClass = item.hasData ? "has-data" : "empty";
   const statusText = item.hasData ? "有数据" : "空";
   const valueDisplay = item.hasData 
-    ? '<div class="value-box">' + formatValue(item.value) + '</div>'
-    : '<div class="empty-box">暂无数据，请先访问对应网站</div>';
+    ? '<div class="value-box">' + escapeHtml(item.value) + '</div>'
+    : '<div class="empty-box">暂无数据</div>';
+  const deleteBtn = item.hasData ? '<button class="btn btn-delete" onclick="deleteKey(\'' + item.key + '\')">删除</button>' : '';
+  const copyValueBtn = item.hasData ? '<button class="btn btn-value" onclick="copyText(\'' + escapeJs(item.value) + '\')">复制</button>' : '';
   
-  const deleteBtn = item.hasData
-    ? '<button class="btn btn-delete" onclick="deleteKey(\'' + (item.parentKey || item.key) + '\')">删除</button>'
-    : '';
-  
-  const copyValueBtn = item.hasData
-    ? '<button class="btn btn-value" onclick="copyValue(' + item.index + ')">复制 Value</button>'
-    : '<button class="btn btn-value" disabled>无数据</button>';
-  
-  const cardClass = item.isArrayItem ? "card array-item" : "card";
-  
-  return '<div class="' + cardClass + '">' +
-    '<div class="card-header">' +
-      '<div>' +
-        '<div class="card-label">' + item.label + '</div>' +
-        '<div class="card-key">' + item.key + '</div>' +
-      '</div>' +
-      '<div class="status ' + statusClass + '">' + statusText + '</div>' +
-    '</div>' +
-    '<div class="card-body">' +
-      valueDisplay +
-      '<div class="btn-row">' +
-        '<button class="btn btn-key" onclick="copyKey(' + item.index + ')">复制 Key</button>' +
-        copyValueBtn +
-        deleteBtn +
-      '</div>' +
-    '</div>' +
-  '</div>';
+  return '<div class="card"><div class="card-header"><div><div class="card-label">' + item.label + '</div><div class="card-key">' + item.key + '</div></div><div class="status ' + statusClass + '">' + statusText + '</div></div><div class="card-body">' + valueDisplay + '<div class="btn-row"><button class="btn btn-key" onclick="copyText(\'' + item.key + '\')">复制Key</button>' + copyValueBtn + deleteBtn + '</div></div></div>';
 }).join("");
 
-const valuesJson = JSON.stringify(allCards.map(d => ({ key: d.key, value: d.value, parentKey: d.parentKey || d.key })));
-const allKeysJson = JSON.stringify(allKeysForClear);
+const barventoryOptions = barventoryData.map((item, idx) => {
+  const time = item.time || "Record " + (idx + 1);
+  return '<option value="' + idx + '">' + time + '</option>';
+}).join("");
 
-const html = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>QX 数据查看器</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f5f7;padding:16px}h1{font-size:24px;font-weight:600;margin-bottom:6px;color:#1d1d1f}.subtitle{color:#86868b;margin-bottom:20px;font-size:13px}.stats{display:flex;gap:10px;margin-bottom:16px}.stat{flex:1;background:white;border-radius:10px;padding:14px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.1)}.stat-num{font-size:28px;font-weight:700}.stat-num.green{color:#059669}.stat-num.red{color:#dc2626}.stat-label{font-size:11px;color:#86868b;margin-top:2px}.card{background:white;border-radius:12px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1);overflow:hidden}.card.array-item{border-left:4px solid #007aff}.card-header{padding:14px 16px;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center}.card-label{font-size:15px;font-weight:600;color:#1d1d1f}.card-key{font-size:12px;color:#86868b;font-family:monospace;margin-top:2px}.status{padding:4px 10px;border-radius:10px;font-size:11px;font-weight:500}.status.has-data{background:#d1fae5;color:#059669}.status.empty{background:#fee2e2;color:#dc2626}.card-body{padding:12px 16px}.value-box{background:#f5f5f7;border-radius:8px;padding:12px;font-family:monospace;font-size:12px;line-height:1.5;max-height:200px;overflow:auto;word-break:break-all;white-space:pre-wrap;color:#1d1d1f}.empty-box{background:#fef3c7;border-radius:8px;padding:20px;text-align:center;color:#92400e;font-size:13px}.btn-row{display:flex;gap:8px;margin-top:10px}.btn{flex:1;padding:10px;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer}.btn-key{background:#e0e7ff;color:#4338ca}.btn-value{background:#dbeafe;color:#1d4ed8}.btn-delete{background:#fee2e2;color:#dc2626}.btn-clear-all{background:#dc2626;color:white;width:100%;margin-top:20px;padding:14px}.btn:disabled{background:#e5e5e5;color:#9ca3af;cursor:not-allowed}.btn:active:not(:disabled){opacity:0.7}.timestamp{text-align:center;color:#86868b;font-size:11px;margin-top:20px}</style></head><body><h1>📊 QX 数据查看器</h1><p class="subtitle">点击按钮快速复制 Key 或 Value</p><div class="stats"><div class="stat"><div class="stat-num green">' + hasDataCount + '</div><div class="stat-label">有数据</div></div><div class="stat"><div class="stat-num red">' + emptyCount + '</div><div class="stat-label">空</div></div></div>' + cardsHtml + '<button class="btn btn-clear-all" onclick="clearAll()">🗑️ 清除所有数据</button><div class="timestamp">生成时间：' + new Date().toLocaleString("zh-CN") + '</div><script>var DATA=' + valuesJson + ';var ALL_KEYS=' + allKeysJson + ';function copyKey(i){var k=DATA[i].key;if(navigator.clipboard){navigator.clipboard.writeText(k).then(function(){alert("已复制 Key: "+k)})}else{prompt("请手动复制:",k)}}function copyValue(i){var v=DATA[i].value;if(v){if(navigator.clipboard){navigator.clipboard.writeText(v).then(function(){alert("已复制 Value")})}else{prompt("请手动复制:",v)}}}function deleteKey(key){if(confirm("确定删除 "+key+" 吗？")){window.location.href="https://umalaaa.github.io/qx-data/delete?key="+encodeURIComponent(key)}}function clearAll(){if(confirm("确定清除所有数据吗？此操作不可恢复！")){window.location.href="https://umalaaa.github.io/qx-data/clear"}}</script></body></html>';
+const barventoryJson = JSON.stringify(barventoryData);
 
-$done({ 
-  status: "HTTP/1.1 200 OK",
-  headers: { "Content-Type": "text/html; charset=utf-8" },
-  body: html
-});
+const barventorySection = barventoryData.length > 0 
+  ? '<div class="card array-card"><div class="card-header"><div><div class="card-label">Barventory Response</div><div class="card-key">RESP_barventory (' + barventoryData.length + ' 条记录)</div></div><div class="status has-data">有数据</div></div><div class="card-body"><select id="bv-select" onchange="showRecord(this.value)"><option value="">-- 选择记录查看 --</option>' + barventoryOptions + '</select><div id="bv-display" class="json-box"></div><div class="btn-row"><button class="btn btn-key" onclick="copyText(\'RESP_barventory\')">复制Key</button><button class="btn btn-value" onclick="copyCurrentRecord()">复制当前记录</button><button class="btn btn-delete" onclick="deleteKey(\'RESP_barventory\')">删除全部</button></div></div></div>'
+  : '<div class="card"><div class="card-header"><div><div class="card-label">Barventory Response</div><div class="card-key">RESP_barventory</div></div><div class="status empty">空</div></div><div class="card-body"><div class="empty-box">暂无数据</div></div></div>';
+
+const html = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>QX数据</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,sans-serif;background:#1a1a2e;padding:16px;color:#eee}h1{font-size:22px;margin-bottom:4px}h1 span{font-size:16px}.subtitle{color:#888;margin-bottom:16px;font-size:12px}.stats{display:flex;gap:10px;margin-bottom:16px}.stat{flex:1;background:#16213e;border-radius:10px;padding:12px;text-align:center}.stat-num{font-size:24px;font-weight:700}.stat-num.green{color:#10b981}.stat-num.red{color:#ef4444}.stat-label{font-size:10px;color:#888;margin-top:2px}.card{background:#16213e;border-radius:12px;margin-bottom:12px;overflow:hidden}.array-card{border-left:3px solid #3b82f6}.card-header{padding:12px;border-bottom:1px solid #0f3460;display:flex;justify-content:space-between;align-items:center}.card-label{font-size:14px;font-weight:600}.card-key{font-size:11px;color:#888;font-family:monospace;margin-top:2px}.status{padding:3px 8px;border-radius:8px;font-size:10px;font-weight:500}.status.has-data{background:#064e3b;color:#10b981}.status.empty{background:#7f1d1d;color:#ef4444}.card-body{padding:12px}select{width:100%;padding:10px;border-radius:8px;border:1px solid #0f3460;background:#1a1a2e;color:#eee;font-size:13px;margin-bottom:10px}.value-box{background:#0f3460;border-radius:8px;padding:10px;font-family:monospace;font-size:11px;max-height:120px;overflow:auto;word-break:break-all;color:#a5b4fc}.json-box{background:#0f3460;border-radius:8px;padding:12px;font-family:monospace;font-size:11px;max-height:300px;overflow:auto;white-space:pre-wrap;line-height:1.6;color:#eee}.json-key{color:#f472b6}.json-string{color:#a5f3fc}.json-number{color:#fbbf24}.json-bool{color:#a78bfa}.json-null{color:#94a3b8}.empty-box{background:#7f1d1d33;border-radius:8px;padding:16px;text-align:center;color:#fca5a5;font-size:12px}.btn-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}.btn{flex:1;min-width:70px;padding:8px;border:none;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer}.btn-key{background:#312e81;color:#a5b4fc}.btn-value{background:#1e3a5f;color:#60a5fa}.btn-delete{background:#7f1d1d;color:#fca5a5}.btn-clear{background:#dc2626;color:#fff;width:100%;margin-top:16px;padding:12px;font-size:13px}.btn:active{opacity:.7}.ts{text-align:center;color:#555;font-size:10px;margin-top:16px}</style></head><body><h1><span>📊</span> QX数据查看器</h1><p class="subtitle">点击复制 · 下拉查看</p><div class="stats"><div class="stat"><div class="stat-num green">' + hasDataCount + '</div><div class="stat-label">有数据</div></div><div class="stat"><div class="stat-num red">' + emptyCount + '</div><div class="stat-label">空</div></div></div>' + simpleCardsHtml + barventorySection + '<button class="btn btn-clear" onclick="clearAll()">🗑️ 清除所有数据</button><div class="ts">' + new Date().toLocaleString("zh-CN") + '</div><script>var BV=' + barventoryJson + ';function syntaxHighlight(j){if(!j)return"";return j.replace(/("(\\\\u[a-zA-Z0-9]{4}|\\\\[^u]|[^\\\\"])*"(\\s*:)?|\\b(true|false|null)\\b|-?\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d+)?)/g,function(m){var c="json-number";if(/^"/.test(m)){c=/":$/.test(m)?"json-key":"json-string"}else if(/true|false/.test(m)){c="json-bool"}else if(/null/.test(m)){c="json-null"}return"<span class=\\""+c+"\\">"+m+"</span>"})}function showRecord(i){var d=document.getElementById("bv-display");if(i===""||!BV[i]){d.innerHTML="";return}d.innerHTML=syntaxHighlight(JSON.stringify(BV[i],null,2))}function copyText(t){if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){alert("已复制")})}else{prompt("复制:",t)}}function copyCurrentRecord(){var s=document.getElementById("bv-select").value;if(s!==""&&BV[s]){copyText(JSON.stringify(BV[s],null,2))}}function deleteKey(k){if(confirm("删除 "+k+"?")){location.href="https://umalaaa.github.io/qx-data/delete?key="+encodeURIComponent(k)}}function clearAll(){if(confirm("清除所有数据?")){location.href="https://umalaaa.github.io/qx-data/clear"}}</script></body></html>';
+
+$done({status:"HTTP/1.1 200 OK",headers:{"Content-Type":"text/html;charset=utf-8"},body:html});

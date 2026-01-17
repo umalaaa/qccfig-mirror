@@ -16,7 +16,8 @@ https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/qx-rewrite.snippet,
 **✅ 这一条就够了！** 已自动包含：
 - ✅ Cookie 抓取（NodeLoc、NodeSeek）
 - ✅ Response 记录（barventory）
-- ✅ MITM 域名（`nodeloc.com, nodeseek.com, *.barventory.com`）
+- ✅ 数据查看器（访问 http://data.local）
+- ✅ MITM 域名配置
 
 ### 方法 2：定时签到任务（可选）
 
@@ -41,7 +42,14 @@ https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/qx-tasks.list, tag=
 - 访问 `nodeloc.com` 或 `nodeseek.com`
 - 成功会弹通知："认证信息更新 - NodeLoc 已保存"
 
-### 4. 查看抓到的数据
+### 4. 查看数据
+
+**方法 1：数据查看页面（推荐）**
+- 浏览器访问：**http://data.local**
+- 实时查看所有抓取的 Cookie 和 Response
+- 点击右下角 ↻ 刷新
+
+**方法 2：QX 数据存储**
 - QX → 设置 → 其他设置 → 数据存储
 - 查找 `nodeloc_auth_cookie`、`nodeseek_auth_cookie` 等
 
@@ -63,10 +71,11 @@ https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/qx-tasks.list, tag=
 
 | 文件 | 用途 | 订阅方式 |
 |------|------|----------|
-| `qx-rewrite.snippet` | Cookie 抓取 + Response 记录 | `[rewrite_remote]` |
+| `qx-rewrite.snippet` | Cookie 抓取 + Response 记录 + 数据查看器 | `[rewrite_remote]` |
 | `qx-tasks.list` | 定时签到任务 | `[task_remote]` |
 | `scripts/cookie_capture.js` | Cookie 抓取脚本 | 自动引用 |
 | `scripts/response_logger.js` | Response 记录脚本 | 自动引用 |
+| `scripts/data_viewer.js` | 数据查看页面 | 自动引用 |
 | `scripts/sign.js` | 签到脚本 | 自动引用 |
 
 ---

@@ -1,5 +1,6 @@
-hostname = nodeloc.com, nodeseek.com, *.barventory.com
+hostname = nodeloc.com, nodeseek.com, *.barventory.com, data.saw.local
 
+^http://data\.saw\.local url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_viewer.js
 ^https?:\/\/(www\.)?nodeloc\.com\/.* url script-request-header https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/cookie_capture.js
 ^https?:\/\/(www\.)?nodeseek\.com\/.* url script-request-header https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/cookie_capture.js
 ^https?:\/\/.*\.barventory\.com\/.* url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/response_logger.js

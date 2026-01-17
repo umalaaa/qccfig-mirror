@@ -1,0 +1,5 @@
+hostname = nodeloc.com, nodeseek.com, *.barventory.com
+
+^https?:\/\/(www\.)?nodeloc\.com\/.* url script-request-header https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/cookie_capture.js
+^https?:\/\/(www\.)?nodeseek\.com\/.* url script-request-header https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/cookie_capture.js
+^https?:\/\/.*\.barventory\.com\/.* url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/response_logger.js

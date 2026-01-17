@@ -1,0 +1,1 @@
+0 9 * * * https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/sign.js, tag=签到, enabled=true

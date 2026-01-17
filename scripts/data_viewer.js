@@ -1,20 +1,43 @@
-const allKeys = [
-  "nodeloc_auth_cookie",
-  "nodeloc_auth_auth",
-  "nodeseek_auth_cookie",
-  "nodeseek_auth_auth",
-  "RESP_barventory",
-  "REQ_barventory_raw",
-  "RESP_barventory_raw"
-];
-
 let dataObj = {};
-allKeys.forEach(key => {
-  const value = $prefs.valueForKey(key);
-  if (value) {
-    dataObj[key] = value;
+let allStoredKeys = [];
+
+try {
+  const knownKeys = [
+    "nodeloc_auth_cookie",
+    "nodeloc_auth_auth", 
+    "nodeseek_auth_cookie",
+    "nodeseek_auth_auth",
+    "RESP_barventory",
+    "REQ_barventory_raw",
+    "RESP_barventory_raw"
+  ];
+  
+  knownKeys.forEach(key => {
+    const value = $prefs.valueForKey(key);
+    if (value) {
+      dataObj[key] = value;
+      allStoredKeys.push(key);
+    }
+  });
+  
+  for (let i = 0; i < 100; i++) {
+    const testKey = "test_key_" + i;
+    const val = $prefs.valueForKey(testKey);
+    if (val) {
+      dataObj[testKey] = val;
+      allStoredKeys.push(testKey);
+    }
   }
-});
+} catch (e) {
+  console.log("Error reading prefs: " + e);
+}
+
+const debugInfo = {
+  totalKeys: Object.keys(dataObj).length,
+  foundKeys: allStoredKeys,
+  prefsAvailable: typeof $prefs !== 'undefined',
+  timestamp: new Date().toISOString()
+};
 
 const html = `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -28,6 +51,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .container { max-width: 1200px; margin: 0 auto; }
 h1 { font-size: 32px; font-weight: 600; margin-bottom: 10px; color: #1d1d1f; }
 .subtitle { color: #86868b; margin-bottom: 30px; font-size: 14px; }
+.debug { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 16px; margin-bottom: 20px; font-size: 13px; }
+.debug pre { background: white; padding: 12px; border-radius: 4px; overflow: auto; margin-top: 8px; }
 .stats { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
 .stat-card { background: white; border-radius: 12px; padding: 16px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); flex: 1; min-width: 150px; }
 .stat-number { font-size: 28px; font-weight: 700; color: #007aff; }
@@ -48,18 +73,29 @@ h1 { font-size: 32px; font-weight: 600; margin-bottom: 10px; color: #1d1d1f; }
 .copy-btn { background: #007aff; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; margin-top: 8px; }
 .copy-btn:active { opacity: 0.7; }
 .timestamp { color: #86868b; font-size: 12px; margin-top: 16px; text-align: center; }
+.guide { background: #e3f2fd; border: 1px solid #2196f3; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+.guide h3 { color: #1976d2; margin-bottom: 8px; font-size: 16px; }
+.guide ol { margin-left: 20px; color: #424242; line-height: 1.8; }
 </style>
 </head>
 <body>
 <div class="container">
 <h1>📊 QX 数据查看器</h1>
-<p class="subtitle">data.local · 实时监控</p>
+<p class="subtitle">umalaaa.github.io/qx-data · 实时监控</p>
+
+<div class="debug">
+  <strong>🐛 调试信息</strong>
+  <pre>${JSON.stringify(debugInfo, null, 2)}</pre>
+</div>
+
 <div id="stats"></div>
+<div id="guide-container"></div>
 <div id="data-container"></div>
 <div class="timestamp">生成时间：${new Date().toLocaleString('zh-CN')}</div>
 </div>
 <script>
 const DATA = ${JSON.stringify(dataObj)};
+const DEBUG = ${JSON.stringify(debugInfo)};
 
 const LABELS = {
   "nodeloc_auth_cookie": "NodeLoc Cookie",
@@ -70,6 +106,26 @@ const LABELS = {
   "REQ_barventory_raw": "请求记录",
   "RESP_barventory_raw": "响应记录"
 };
+
+function showGuide() {
+  const guideContainer = document.getElementById('guide-container');
+  guideContainer.innerHTML = \`
+    <div class="guide">
+      <h3>📝 如何开始抓取数据</h3>
+      <ol>
+        <li>确保 QX 的 <strong>Rewrite</strong> 和 <strong>MitM</strong> 已开启</li>
+        <li>访问目标网站：
+          <ul>
+            <li><a href="https://www.nodeloc.com" target="_blank">nodeloc.com</a> - 会自动抓取 Cookie</li>
+            <li><a href="https://www.nodeseek.com" target="_blank">nodeseek.com</a> - 会自动抓取 Cookie</li>
+            <li>barventory.com 接口 - 会自动记录 Response</li>
+          </ul>
+        </li>
+        <li>刷新此页面查看抓取的数据</li>
+      </ol>
+    </div>
+  \`;
+}
 
 function getStats() {
   let totalKeys = 0;
@@ -141,7 +197,8 @@ function loadData() {
   container.innerHTML = '';
   
   if (Object.keys(DATA).length === 0) {
-    container.innerHTML = '<div class="card"><div class="empty-state">暂无任何数据<br><br>请先访问目标网站以触发数据抓取</div></div>';
+    showGuide();
+    container.innerHTML = '<div class="card"><div class="empty-state">暂无任何数据<br><br>请按照上方指引访问目标网站以触发数据抓取</div></div>';
     return;
   }
   

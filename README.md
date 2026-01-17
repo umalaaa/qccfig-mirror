@@ -16,7 +16,7 @@ https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/qx-rewrite.snippet,
 **✅ 这一条就够了！** 已自动包含：
 - ✅ Cookie 抓取（NodeLoc、NodeSeek）
 - ✅ Response 记录（barventory）
-- ✅ 数据查看器（访问 http://data.local）
+- ✅ 数据查看器（访问 https://umalaaa.github.io/qx-data/）
 - ✅ MITM 域名配置
 
 ### 方法 2：定时签到任务（可选）
@@ -44,10 +44,14 @@ https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/qx-tasks.list, tag=
 
 ### 4. 查看数据
 
-**方法 1：数据查看页面（推荐）**
-- 浏览器访问：**http://data.local**
+**方法 1：数据查看页面（推荐，100% 安全）**
+- 浏览器访问：**https://umalaaa.github.io/qx-data/**
+- 🔒 **数据安全说明**：
+  - GitHub Pages 只托管空白占位符
+  - 你的数据由 QX 在本地注入，不会上传
+  - 关闭 QX 访问 = 只看到占位符
+  - 开启 QX 访问 = 看到你的数据
 - 实时查看所有抓取的 Cookie 和 Response
-- 点击右下角 ↻ 刷新
 
 **方法 2：QX 数据存储**
 - QX → 设置 → 其他设置 → 数据存储

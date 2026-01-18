@@ -64,15 +64,24 @@ try {
     html.push('</style></head><body>');
 
     html.push('<h1>QX Data Manager</h1>');
-    html.push('<div id="app"></div>'); 
+    
+    html.push('<div id="app">Loading...</div>'); 
+    
+    html.push('<pre id="debug" style="display:none;color:red;background:#222;padding:10px;margin-top:20px;white-space:pre-wrap"></pre>');
 
-    html.push('<script type="application/json" id="raw-data">' + JSON.stringify(payload) + '</script>');
+    var jsonStr = JSON.stringify(payload).replace(/<\/script>/g, '<\\/script>');
+    html.push('<script type="application/json" id="raw-data">' + jsonStr + '</script>');
 
     html.push('<script>');
-    html.push('const data = JSON.parse(document.getElementById("raw-data").textContent);');
-    html.push('const app = document.getElementById("app");');
+    html.push('window.onerror = function(msg, url, line) { document.getElementById("debug").style.display="block"; document.getElementById("debug").textContent += "Error: " + msg + "\\nLine: " + line + "\\n"; };');
+    html.push('try {');
+    html.push('  const rawContent = document.getElementById("raw-data").textContent;');
+    html.push('  if (!rawContent) throw new Error("Empty raw-data");');
+    html.push('  const data = JSON.parse(rawContent);');
+    html.push('  const app = document.getElementById("app");');
+    html.push('  app.innerHTML = "";'); 
     
-    html.push('function el(tag, cls, text) { const e = document.createElement(tag); if(cls) e.className = cls; if(text) e.textContent = text; return e; }');
+    html.push('  function el(tag, cls, text) { const e = document.createElement(tag); if(cls) e.className = cls; if(text) e.textContent = text; return e; }');
     
     html.push('function render() {');
     html.push('  if (data.items.length > 0) {');
@@ -144,7 +153,8 @@ try {
     html.push('  document.body.removeChild(ta);');
     html.push('}');
 
-    html.push('render();');
+    html.push('  render();');
+    html.push('} catch(e) { document.getElementById("debug").style.display="block"; document.getElementById("debug").textContent += "Render Error: " + e; }');
     html.push('</script></body></html>');
 
     $done({

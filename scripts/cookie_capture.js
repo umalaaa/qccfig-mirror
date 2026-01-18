@@ -4,8 +4,13 @@ const targets = [
 ];
 
 const h = $request.headers || {};
-const cookie = h.Cookie || h.cookie;
-const auth = h.Authorization || h.authorization;
+const headers = {};
+for (const key in h) {
+  headers[key.toLowerCase()] = h[key];
+}
+
+const cookie = headers["cookie"];
+const auth = headers["authorization"];
 
 let host = "";
 try {
@@ -26,6 +31,28 @@ if (!target) {
   $done({});
 }
 
+let extraChanged = false;
+if (target.name === "NodeSeek") {
+  const NEED_KEYS = ["connection", "accept-encoding", "priority", "content-type", "origin", "refract-sign", "user-agent", "refract-key", "sec-fetch-mode", "cookie", "host", "referer", "accept-language", "accept"];
+  const captured = {};
+  let hasContent = false;
+  for (const k of NEED_KEYS) {
+    if (headers[k]) {
+      captured[k] = headers[k];
+      hasContent = true;
+    }
+  }
+  
+  if (hasContent) {
+    const oldHeaders = $prefs.valueForKey("nodeseek_headers");
+    const newHeaders = JSON.stringify(captured);
+    if (oldHeaders !== newHeaders) {
+      $prefs.setValueForKey(newHeaders, "nodeseek_headers");
+      extraChanged = true;
+    }
+  }
+}
+
 const cookieKey = target.key + "_cookie";
 const authKey = target.key + "_auth";
 
@@ -44,10 +71,10 @@ if (auth && auth !== oldAuth) {
   changed = true;
 }
 
-if (changed) {
-  $notify("✅ " + target.name, "认证已更新", "Cookie/Auth 已保存");
+if (changed || extraChanged) {
+  $notify("✅ " + target.name, "认证已更新", "Cookie/Headers 已保存");
 } else {
-  console.log("⚠️ " + target.name + ": Cookie/Auth matches existing value. Skipped notification.");
+  console.log("⚠️ " + target.name + ": Data matches existing value. Skipped notification.");
 }
 
 $done({});

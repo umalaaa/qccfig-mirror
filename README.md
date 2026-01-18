@@ -45,13 +45,26 @@ nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barventory.com, 
 
 ---
 
-## 🍪 Cookie 捕获说明
+## 🍪 Cookie 捕获与签到
 
+### 1. Cookie 捕获
 脚本会自动捕获以下网站的 Cookie/Auth：
-- NodeLoc
-- NodeSeek
+- **NodeLoc**
+- **NodeSeek** (捕获完整 Headers 用于签到)
 
-**防骚扰机制**: 只有当 Cookie **发生变化**时才会发送通知，避免重复刷屏。
+**防骚扰机制**: 只有当数据 **发生变化** 时才会发送通知。
+
+### 2. 每日签到
+已包含 NodeSeek 自动签到脚本。
+
+**配置方法**:
+在 Quantumult X 的 `[task_local]` 中添加：
+
+```conf
+0 9 * * * https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/nodeseek_checkin.js, tag=NodeSeek签到, img-url=https://www.nodeseek.com/static/image/favicon/android-chrome-192x192.png, enabled=true
+```
+
+*(每天上午 9:00 执行)*
 
 ---
 

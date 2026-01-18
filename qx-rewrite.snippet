@@ -24,3 +24,8 @@ hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barve
 
 # ============ Barventory Response 记录 ============
 ^https?://.*\.barventory\.com/.* url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/response_logger.js
+
+# ============ 每日签到任务 ============
+# 每天 9:00 执行 NodeSeek 签到
+# 注意: 需要在 QX 的 [task_local] 中添加，或订阅此片段
+# 0 9 * * * https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/nodeseek_checkin.js, tag=NodeSeek签到, img-url=https://www.nodeseek.com/static/image/favicon/android-chrome-192x192.png, enabled=true

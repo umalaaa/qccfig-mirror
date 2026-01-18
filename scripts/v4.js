@@ -25,7 +25,7 @@ try {
         var v = $prefs.valueForKey(k);
         html.push('<h3>' + labels[i] + '</h3>');
         if (v) {
-            var cleanV = v.replace(/</g, "&lt;");
+            var cleanV = String(v).replace(/</g, "&lt;");
             html.push('<pre>' + cleanV + '</pre>');
             html.push('<a href="' + base + '/delete?key=' + k + '" style="background:#800">DELETE</a>');
         } else {
@@ -36,7 +36,7 @@ try {
     var bv = $prefs.valueForKey("RESP_barventory");
     html.push('<h3 style="color:#5bf">Barventory</h3>');
     if (bv) {
-        var cleanBv = bv.replace(/</g, "&lt;");
+        var cleanBv = String(bv).replace(/</g, "&lt;");
         if (cleanBv.length > 500) cleanBv = cleanBv.substring(0, 500) + "... (truncated)";
         html.push('<pre>' + cleanBv + '</pre>');
         html.push('<a href="' + base + '/delete?key=RESP_barventory" style="background:#800">DELETE ALL</a>');

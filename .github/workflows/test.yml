@@ -21,3 +21,6 @@ jobs:
         
       - name: Run Syntax Check (Clr)
         run: node test/runner.js scripts/clr.js
+
+      - name: Run NodeSeek Checkin Test
+        run: node test/runner.js scripts/nodeseek_checkin.js

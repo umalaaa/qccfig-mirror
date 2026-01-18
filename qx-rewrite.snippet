@@ -1,14 +1,14 @@
 hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barventory.com, qxdata.liangjima.com, umalaaa.github.io, captive.apple.com
 
-# ============ QX Data Viewer V2 (Fixes) ============
+# ============ QX Data Viewer V3 (Ultimate) ============
 
 # 1. 推荐入口 (HTTP)
 # 访问: http://qxdata.liangjima.com
-^http://qxdata\.liangjima\.com(/.*)?$ url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/viewer_v2.js
+^http://qxdata\.liangjima\.com(/.*)?$ url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/viewer_v3.js
 
 # 2. 备用入口 (HTTPS - 需 MitM)
 # 访问: https://umalaaa.github.io/qx-data
-^https://umalaaa\.github\.io/qx-data(/.*)?$ url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/viewer_v2.js
+^https://umalaaa\.github\.io/qx-data(/.*)?$ url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/viewer_v3.js
 
 # 3. 删除/清除路由
 ^https?://(qxdata\.liangjima\.com|umalaaa\.github\.io|captive\.apple\.com)/qx-data/delete.* url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/del.js

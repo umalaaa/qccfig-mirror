@@ -19,6 +19,24 @@ try {
   $done({});
 }
 
+// ============================================
+// 🚫 过滤规则 (Anti-Spam Logic)
+// ============================================
+const url = $request.url;
+// 1. 排除静态资源后缀
+if (/\.(png|jpg|jpeg|gif|css|js|ico|svg|woff2|ttf|map)($|\?)/i.test(url)) {
+  $done({});
+}
+// 2. 排除常见静态资源路径
+if (url.includes("/static/") || url.includes("/assets/") || url.includes("/template/") || url.includes("/favicon")) {
+  $done({});
+}
+// 3. 仅允许 GET 和 POST
+if ($request.method !== 'GET' && $request.method !== 'POST') {
+  $done({});
+}
+// ============================================
+
 let target = null;
 for (const item of targets) {
   if (item.match.test(host)) {

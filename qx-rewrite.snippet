@@ -1,11 +1,12 @@
-hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barventory.com, api.example.com
+hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barventory.com, umalaaa.github.io
 
 # ============ 数据查看器 ============
-# 访问: http://api.example.com/qxdata
+# 访问: https://umalaaa.github.io/qxdata
+# 使用 script-echo-response 完全拦截，不发送真实请求
 
-^https?://api\.example\.com/qxdata/delete url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_delete.js
-^https?://api\.example\.com/qxdata/clear url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_clear.js
-^https?://api\.example\.com/qxdata url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_viewer.js
+^https://umalaaa\.github\.io/qxdata/delete url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_delete.js
+^https://umalaaa\.github\.io/qxdata/clear url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_clear.js
+^https://umalaaa\.github\.io/qxdata url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_viewer.js
 
 # ============ Cookie 捕获 ============
 ^https?://(www\.)?nodeloc\.com/.* url script-request-header https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/cookie_capture.js

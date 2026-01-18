@@ -64,7 +64,6 @@ try {
     html.push('</style></head><body>');
 
     html.push('<h1>QX Data Manager</h1>');
-    
     html.push('<div id="app"></div>'); 
 
     html.push('<script type="application/json" id="raw-data">' + JSON.stringify(payload) + '</script>');
@@ -101,12 +100,19 @@ try {
     html.push('      const sel = el("select");');
     html.push('      sel.innerHTML = "<option value=\'-1\'>Select an item (" + data.barventory.length + " records)...</option>";');
     html.push('      data.barventory.forEach((item, idx) => {');
-    html.push('        const opt = el("option", "", "Item " + (idx+1) + (item.time ? " - " + item.time : ""));');
+    html.push('        let label = "Item " + (idx+1);');
+    // Dropdown Label Logic: Try to find URL first, then time/name
+    html.push('        if (item.url) label += ": " + item.url;');
+    html.push('        else if (item.request && item.request.url) label += ": " + item.request.url;');
+    html.push('        else if (item.time) label += " - " + item.time;');
+    html.push('        else if (item.name) label += " - " + item.name;');
+    html.push('        if (label.length > 60) label = label.substring(0, 57) + "...";'); // Truncate
+    html.push('        const opt = el("option", "", label);');
     html.push('        opt.value = idx; sel.appendChild(opt);');
     html.push('      });');
     html.push('      row2.appendChild(sel);');
     
-    html.push('      const ta2 = el("textarea"); ta2.rows = 12; ta2.id = "bv-view"; ta2.placeholder = "Select an item above..."; row2.appendChild(ta2);');
+    html.push('      const ta2 = el("textarea"); ta2.rows = 12; ta2.id = "bv-view"; ta2.placeholder = "Select an item above to view details..."; row2.appendChild(ta2);');
     html.push('      sel.onchange = (e) => {');
     html.push('         const idx = e.target.value;');
     html.push('         if(idx == -1) ta2.value = "";');
@@ -119,7 +125,7 @@ try {
     html.push('    }');
     
     html.push('    const acts2 = el("div", "actions");');
-    html.push('    const cBtn2 = el("button", "btn-copy", "Copy Raw Data"); cBtn2.onclick = () => copyText(displayVal); acts2.appendChild(cBtn2);');
+    html.push('    const cBtn2 = el("button", "btn-copy", "Copy Raw"); cBtn2.onclick = () => copyText(displayVal); acts2.appendChild(cBtn2);');
     html.push('    const dBtn2 = el("a", "btn btn-del", "Clear All"); dBtn2.href = data.baseUrl + "/delete?key=RESP_barventory"; acts2.appendChild(dBtn2);');
     html.push('    row2.appendChild(acts2);');
     

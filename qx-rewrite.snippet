@@ -1,17 +1,12 @@
-hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barventory.com, qxdata.local, umalaaa.github.io, captive.apple.com
+hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barventory.com, qxdata.liangjima.com
 
 # ============ 数据查看器 ============
-# 访问: http://qxdata.local (无 MitM 需求，但需本地 DNS 配合或 QX 直接拦截)
-# 备用: http://captive.apple.com/qxdata
+# 访问: http://qxdata.liangjima.com
+# 协议: HTTP (确保无 HSTS 问题)
 
-^http://qxdata\.local/delete url script-echo-response https://cdn.jsdelivr.net/gh/umalaaa/qccfig-mirror@main/scripts/del.js
-^http://qxdata\.local/clear url script-echo-response https://cdn.jsdelivr.net/gh/umalaaa/qccfig-mirror@main/scripts/clr.js
-^http://qxdata\.local url script-echo-response https://cdn.jsdelivr.net/gh/umalaaa/qccfig-mirror@main/scripts/viewer.js
-
-# HTTP 双保险 (captive.apple.com)
-^http://captive\.apple\.com/qxdata/delete url script-echo-response https://cdn.jsdelivr.net/gh/umalaaa/qccfig-mirror@main/scripts/del.js
-^http://captive\.apple\.com/qxdata/clear url script-echo-response https://cdn.jsdelivr.net/gh/umalaaa/qccfig-mirror@main/scripts/clr.js
-^http://captive\.apple\.com/qxdata url script-echo-response https://cdn.jsdelivr.net/gh/umalaaa/qccfig-mirror@main/scripts/viewer.js
+^http://qxdata\.liangjima\.com/delete url script-echo-response https://cdn.jsdelivr.net/gh/umalaaa/qccfig-mirror@main/scripts/del.js
+^http://qxdata\.liangjima\.com/clear url script-echo-response https://cdn.jsdelivr.net/gh/umalaaa/qccfig-mirror@main/scripts/clr.js
+^http://qxdata\.liangjima\.com url script-echo-response https://cdn.jsdelivr.net/gh/umalaaa/qccfig-mirror@main/scripts/viewer.js
 
 # ============ Cookie 捕获 ============
 ^https?://(www\.)?nodeloc\.com/.* url script-request-header https://cdn.jsdelivr.net/gh/umalaaa/qccfig-mirror@main/scripts/cookie_capture.js

@@ -8,5 +8,5 @@ $prefs.removeValueForKey(k);
 $done({
   status: "HTTP/1.1 200 OK", 
   headers: {"Content-Type": "text/html"}, 
-  body: "<meta http-equiv='refresh' content='0;url=http://qxdata.local'>Deleted " + k
+  body: "<meta http-equiv='refresh' content='0;url=http://qxdata.liangjima.com'>Deleted " + k
 });

@@ -19,8 +19,8 @@ hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barve
 ^http://qxdata\.liangjima\.com/clear.* url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/clr.js
 
 # ============ Cookie 捕获 ============
-# NodeLoc
-^https?://(www\.)?nodeloc\.com/.* url script-request-header https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/cookie_capture.js
+# NodeLoc: 深度优化，只匹配首页和 API 接口，彻底屏蔽静态资源请求
+^https?://(www\.)?nodeloc\.com/($|api/.*) url script-request-header https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/cookie_capture.js
 
 # NodeSeek: 借鉴 ZenmoFeiShi 方案，精准匹配个人信息接口以获取完整 Header
 ^https?://www\.nodeseek\.com/api/account/getInfo/.* url script-request-header https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/cookie_capture.js

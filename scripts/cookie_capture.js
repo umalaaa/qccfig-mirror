@@ -66,7 +66,8 @@ if (target.name === "NodeSeek") {
     const newHeaders = JSON.stringify(captured);
     if (oldHeaders !== newHeaders) {
       $prefs.setValueForKey(newHeaders, "nodeseek_headers");
-      extraChanged = true;
+      console.log("NodeSeek Headers updated in background.");
+      if (!oldHeaders) extraChanged = true;
     }
   }
 }

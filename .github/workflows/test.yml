@@ -1,0 +1,23 @@
+name: Test Scripts
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          
+      - name: Run Syntax Check (Viewer V2)
+        run: node test/runner.js scripts/viewer_v2.js
+        
+      - name: Run Syntax Check (Del)
+        run: node test/runner.js scripts/del.js
+        
+      - name: Run Syntax Check (Clr)
+        run: node test/runner.js scripts/clr.js

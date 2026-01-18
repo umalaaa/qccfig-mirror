@@ -49,10 +49,11 @@ try {
         html.push('<div class="head"><div style="font-size:15px;color:#fff">' + labels[i] + '</div></div>');
         if (v) {
             var cleanV = String(v).replace(/"/g, "&quot;");
-            var jsV = String(v).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n").replace(/\r/g, "");
+            var jsV = String(v).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/'/g, "\\'").replace(/\n/g, "\\n").replace(/\r/g, "");
+            
             html.push('<textarea class="val" rows="3" readonly onclick="this.select()">' + cleanV + '</textarea>');
             html.push('<div class="actions">');
-            html.push('<button onclick="copyText(\\'' + jsV + '\\')" class="btn btn-copy">Copy</button>');
+            html.push("<button onclick='copyText(\"" + jsV + "\")' class='btn btn-copy'>Copy</button>");
             html.push('<a href="' + base + '/delete?key=' + k + '" class="btn btn-del">Delete</a>');
             html.push('</div>');
         } else {
@@ -106,9 +107,9 @@ try {
             html.push('<textarea class="val" rows="6" readonly onclick="this.select()">' + cleanBv + '</textarea>');
         }
 
-        var jsBvFull = String(bv).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n").replace(/\r/g, "");
+        var jsBvFull = String(bv).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/'/g, "\\'").replace(/\n/g, "\\n").replace(/\r/g, "");
         html.push('<div class="actions">');
-        html.push('<button onclick="copyText(\\'' + jsBvFull + '\\')" class="btn btn-copy">Copy Raw</button>');
+        html.push("<button onclick='copyText(\"" + jsBvFull + "\")' class='btn btn-copy'>Copy Raw</button>");
         html.push('<a href="' + base + '/delete?key=RESP_barventory" class="btn btn-del">Clear All</a>');
         html.push('</div>');
 

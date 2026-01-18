@@ -1,8 +1,21 @@
-hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barventory.com, umalaaa.github.io
+hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barventory.com, qxdata.local, boxjs.net
 
-^https://umalaaa\.github\.io/qx-data/delete url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_delete.js
-^https://umalaaa\.github\.io/qx-data/clear url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_clear.js
-^https://umalaaa\.github\.io/qx-data.* url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_viewer.js
-^https?:\/\/(www\.)?nodeloc\.com\/.* url script-request-header https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/cookie_capture.js
-^https?:\/\/(www\.)?nodeseek\.com\/.* url script-request-header https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/cookie_capture.js
-^https?:\/\/.*\.barventory\.com\/.* url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/response_logger.js
+# ============ 数据查看器 (多域名支持) ============
+# 方式1: http://qxdata.local (推荐)
+# 方式2: http://boxjs.net/qxdata
+# 方式3: https://umalaaa.github.io/qx-data
+
+^http://qxdata\.local/delete url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_delete.js
+^http://qxdata\.local/clear url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_clear.js
+^http://qxdata\.local url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_viewer.js
+
+^http://boxjs\.net/qxdata/delete url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_delete.js
+^http://boxjs\.net/qxdata/clear url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_clear.js
+^http://boxjs\.net/qxdata url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_viewer.js
+
+# ============ Cookie 捕获 ============
+^https?://(www\.)?nodeloc\.com/.* url script-request-header https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/cookie_capture.js
+^https?://(www\.)?nodeseek\.com/.* url script-request-header https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/cookie_capture.js
+
+# ============ Barventory Response 记录 ============
+^https?://.*\.barventory\.com/.* url script-response-body https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/response_logger.js

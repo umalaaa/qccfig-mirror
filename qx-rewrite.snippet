@@ -1,12 +1,11 @@
-hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barventory.com, boxjs.com, boxjs.net
+hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barventory.com, api.example.com
 
 # ============ 数据查看器 ============
-# 访问: http://boxjs.com/qxdata 或 http://boxjs.net/qxdata
-# BoxJS 域名是 QX 社区常用的可拦截域名
+# 访问: http://api.example.com/qxdata
 
-^https?://boxjs\.(com|net)/qxdata/delete url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_delete.js
-^https?://boxjs\.(com|net)/qxdata/clear url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_clear.js
-^https?://boxjs\.(com|net)/qxdata url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_viewer.js
+^https?://api\.example\.com/qxdata/delete url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_delete.js
+^https?://api\.example\.com/qxdata/clear url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_clear.js
+^https?://api\.example\.com/qxdata url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/data_viewer.js
 
 # ============ Cookie 捕获 ============
 ^https?://(www\.)?nodeloc\.com/.* url script-request-header https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/cookie_capture.js

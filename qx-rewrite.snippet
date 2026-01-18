@@ -1,15 +1,22 @@
-hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barventory.com, qxdata.liangjima.com, captive.apple.com
+hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barventory.com, qxdata.liangjima.com, umalaaa.github.io, captive.apple.com
 
-# ============ 调试 V4 (Fix Crash) ============
-# 访问: http://qxdata.liangjima.com (指向最新的修复版脚本)
-^http://qxdata\.liangjima\.com(/.*)?$ url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/v4.js
+# ============ QX Data Viewer Pro ============
 
-# 访问: http://qxdata.liangjima.com/delete...
+# 1. 推荐入口 (HTTP)
+# 访问: http://qxdata.liangjima.com
+^http://qxdata\.liangjima\.com(/.*)?$ url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/viewer_pro.js
+
+# 2. 备用入口 (HTTPS - 需 MitM)
+# 访问: https://umalaaa.github.io/qx-data
+^https://umalaaa\.github\.io/qx-data(/.*)?$ url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/viewer_pro.js
+
+# 3. 删除/清除路由 (适配所有域名)
+^https?://(qxdata\.liangjima\.com|umalaaa\.github\.io|captive\.apple\.com)/qx-data/delete.* url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/del.js
+^https?://(qxdata\.liangjima\.com|umalaaa\.github\.io|captive\.apple\.com)/qx-data/clear.* url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/clr.js
+
+# 兼容旧路径
 ^http://qxdata\.liangjima\.com/delete.* url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/del.js
 ^http://qxdata\.liangjima\.com/clear.* url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/clr.js
-
-# 对照组 (V3 极简版)
-^http://captive\.apple\.com/qxdata(/.*)?$ url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/v3.js
 
 # ============ Cookie 捕获 ============
 ^https?://(www\.)?nodeloc\.com/.* url script-request-header https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/cookie_capture.js

@@ -46,6 +46,8 @@ if (auth && auth !== oldAuth) {
 
 if (changed) {
   $notify("✅ " + target.name, "认证已更新", "Cookie/Auth 已保存");
+} else {
+  console.log("⚠️ " + target.name + ": Cookie/Auth matches existing value. Skipped notification.");
 }
 
 $done({});

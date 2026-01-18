@@ -1,7 +1,12 @@
 
 try {
   var url = $request.url;
-  var base = "http://" + url.split("/")[2];
+  var parts = url.split("/");
+  var base = parts[0] + "//" + parts[2];
+  if (url.indexOf("/qx-data") !== -1) {
+    base += "/qx-data";
+  }
+  
   var k = "RESP_barventory";
   var q = url.split("?")[1];
   if (q && q.indexOf("key=") !== -1) {
@@ -14,9 +19,5 @@ try {
     body: "<meta http-equiv='refresh' content='0;url=" + base + "'>Deleted " + k
   });
 } catch(e) {
-  $done({
-    status: "HTTP/1.1 200 OK", 
-    headers: {"Content-Type": "text/html"}, 
-    body: "JS Error: " + e
-  });
+  $done({status: "HTTP/1.1 200 OK", body: "Error: " + e});
 }

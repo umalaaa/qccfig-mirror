@@ -7,5 +7,5 @@ $prefs.removeValueForKey("RESP_barventory");
 $done({
   status: "HTTP/1.1 200 OK", 
   headers: {"Content-Type": "text/html"}, 
-  body: "<meta http-equiv='refresh' content='0;url=https://umalaaa.github.io/qx-data'>Cleared All"
+  body: "<meta http-equiv='refresh' content='0;url=http://qxdata.local'>Cleared All"
 });

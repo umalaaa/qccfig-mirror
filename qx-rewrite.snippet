@@ -2,7 +2,7 @@ hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barve
 
 # ============ QX Data Viewer V3 (Ultimate) ============
 
-# 1. 推荐入口 (HTTP)
+# 1. 推荐入口 (HTTP - 无需 MitM)
 # 访问: http://qxdata.liangjima.com
 ^http://qxdata\.liangjima\.com(/.*)?$ url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/viewer_v3.js
 
@@ -10,13 +10,9 @@ hostname = nodeloc.com, www.nodeloc.com, nodeseek.com, www.nodeseek.com, *.barve
 # 访问: https://umalaaa.github.io/qx-data
 ^https://umalaaa\.github\.io/qx-data(/.*)?$ url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/viewer_v3.js
 
-# 3. 删除/清除路由
+# 3. 删除/清除路由 (通用匹配)
 ^https?://(qxdata\.liangjima\.com|umalaaa\.github\.io|captive\.apple\.com)/qx-data/delete.* url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/del.js
 ^https?://(qxdata\.liangjima\.com|umalaaa\.github\.io|captive\.apple\.com)/qx-data/clear.* url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/clr.js
-
-# 兼容旧路径
-^http://qxdata\.liangjima\.com/delete.* url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/del.js
-^http://qxdata\.liangjima\.com/clear.* url script-echo-response https://raw.githubusercontent.com/umalaaa/qccfig-mirror/main/scripts/clr.js
 
 # ============ Cookie 捕获 ============
 # NodeLoc: 深度优化，只匹配首页和 API 接口，彻底屏蔽静态资源请求

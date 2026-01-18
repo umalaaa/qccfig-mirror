@@ -8,11 +8,14 @@ try {
     html.push('h1{font-size:24px;margin:0 0 16px 4px;font-weight:700}');
     html.push('h3{font-size:13px;color:#888;margin:20px 0 6px 12px;text-transform:uppercase;letter-spacing:0.5px}');
     html.push('.card{background:#1c1c1e;border-radius:12px;overflow:hidden;margin-bottom:8px}');
-    html.push('.row{padding:12px 16px;border-bottom:1px solid #2c2c2e;display:flex;align-items:center;justify-content:space-between}');
+    html.push('.row{padding:12px 16px;border-bottom:1px solid #2c2c2e;display:block}');
     html.push('.row:last-child{border-bottom:none}');
+    html.push('.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}');
     html.push('.val{font-family:Menlo,Monaco,Consolas,monospace;font-size:12px;color:#32d74b;width:100%;overflow-x:auto;white-space:pre-wrap;word-break:break-all;background:transparent;border:none;resize:none;outline:none}');
+    html.push('select{width:100%;padding:8px;background:#2c2c2e;color:#fff;border:none;border-radius:6px;margin-bottom:8px;font-size:13px;appearance:none;-webkit-appearance:none}');
     html.push('.empty{color:#555;font-style:italic;font-size:13px}');
-    html.push('.btn{display:inline-block;padding:6px 12px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;margin-left:8px;flex-shrink:0;cursor:pointer;border:none}');
+    html.push('.actions{display:flex;justify-content:flex-end;margin-top:8px;gap:8px}');
+    html.push('.btn{display:inline-block;padding:6px 12px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;cursor:pointer;border:none}');
     html.push('.btn-del{background:rgba(255,69,58,0.15);color:#ff453a}');
     html.push('.btn-copy{background:rgba(10,132,255,0.15);color:#0a84ff}');
     html.push('.btn-main{background:#0a84ff;color:#fff;display:block;text-align:center;padding:14px;border-radius:12px;margin-top:24px;font-size:16px;font-weight:600;text-decoration:none}');
@@ -43,18 +46,17 @@ try {
         var k = keys[i];
         var v = $prefs.valueForKey(k);
         html.push('<div class="row">');
-        html.push('<div style="width:100%">');
-        html.push('<div style="font-size:15px;margin-bottom:4px;color:#fff">' + labels[i] + '</div>');
+        html.push('<div class="head"><div style="font-size:15px;color:#fff">' + labels[i] + '</div></div>');
         if (v) {
             var cleanV = String(v).replace(/"/g, "&quot;");
             var jsV = String(v).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n").replace(/\r/g, "");
-            html.push('<textarea id="txt_'+i+'" class="val" rows="3" readonly onclick="this.select()">' + cleanV + '</textarea>');
-            html.push('</div>');
+            html.push('<textarea class="val" rows="3" readonly onclick="this.select()">' + cleanV + '</textarea>');
+            html.push('<div class="actions">');
             html.push('<button onclick="copyText(\\'' + jsV + '\\')" class="btn btn-copy">Copy</button>');
             html.push('<a href="' + base + '/delete?key=' + k + '" class="btn btn-del">Delete</a>');
+            html.push('</div>');
         } else {
             html.push('<div class="empty">No Data</div>');
-            html.push('</div>'); 
         }
         html.push('</div>'); 
     }
@@ -62,35 +64,52 @@ try {
 
     var bv = $prefs.valueForKey("RESP_barventory");
     html.push('<h3>Barventory Response</h3>');
-    html.push('<div class="card">');
-    html.push('<div class="row">');
+    html.push('<div class="card"><div class="row">');
+    
     if (bv) {
-        var cleanBv = String(bv).replace(/"/g, "&quot;");
-        var jsBv = String(bv).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n").replace(/\r/g, "");
-        html.push('<div style="width:100%"><textarea class="val" rows="6" readonly onclick="this.select()">' + cleanBv + '</textarea></div>');
-        html.push('<button onclick="copyText(\\'' + jsBv + '\\')" class="btn btn-copy">Copy</button>');
-        html.push('<a href="' + base + '/delete?key=RESP_barventory" class="btn btn-del">Clear</a>');
+        var isArray = false;
+        var bvObj = null;
+        try {
+            bvObj = JSON.parse(bv);
+            if (Array.isArray(bvObj)) isArray = true;
+        } catch(e) {}
+
+        if (isArray && bvObj.length > 0) {
+            html.push('<select id="sel_bv" onchange="showBv(this.value)">');
+            html.push('<option value="-1">Select an item (' + bvObj.length + ' records)</option>');
+            for (var j = 0; j < bvObj.length; j++) {
+                var label = "Item " + (j + 1);
+                if (bvObj[j].time) label = bvObj[j].time;
+                else if (bvObj[j].name) label = bvObj[j].name;
+                html.push('<option value="' + j + '">' + label + '</option>');
+            }
+            html.push('</select>');
+            html.push('<textarea id="txt_bv" class="val" rows="10" readonly></textarea>');
+            
+            var jsonStr = JSON.stringify(bvObj).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/</g, "\\u003c").replace(/>/g, "\\u003e");
+            html.push('<script>var bvData = ' + jsonStr + ';</script>');
+
+        } else {
+            var cleanBv = String(bv).replace(/"/g, "&quot;");
+            html.push('<textarea class="val" rows="6" readonly onclick="this.select()">' + cleanBv + '</textarea>');
+        }
+
+        var jsBvFull = String(bv).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n").replace(/\r/g, "");
+        html.push('<div class="actions">');
+        html.push('<button onclick="copyText(\\'' + jsBvFull + '\\')" class="btn btn-copy">Copy Raw</button>');
+        html.push('<a href="' + base + '/delete?key=RESP_barventory" class="btn btn-del">Clear All</a>');
+        html.push('</div>');
+
     } else {
-        html.push('<div class="empty" style="padding:4px 0">No captured response</div>');
+        html.push('<div class="empty">No captured response</div>');
     }
     html.push('</div></div>');
 
     html.push('<a href="' + base + '/clear" class="btn-main">Clear All Data</a>');
     
     html.push('<script>');
-    html.push('function copyText(text) {');
-    html.push('  const textArea = document.createElement("textarea");');
-    html.push('  textArea.value = text;');
-    html.push('  document.body.appendChild(textArea);');
-    html.push('  textArea.select();');
-    html.push('  try {');
-    html.push('    document.execCommand("copy");');
-    html.push('    alert("Copied to clipboard!");');
-    html.push('  } catch (err) {');
-    html.push('    alert("Failed to copy: " + err);');
-    html.push('  }');
-    html.push('  document.body.removeChild(textArea);');
-    html.push('}');
+    html.push('function copyText(text) { const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); alert("Copied!"); }');
+    html.push('function showBv(idx) { if(idx==-1){document.getElementById("txt_bv").value="";return;} var item = bvData[idx]; document.getElementById("txt_bv").value = JSON.stringify(item, null, 2); }');
     html.push('</script>');
 
     html.push('<div style="text-align:center;color:#444;margin-top:20px;font-size:12px">Generated by QX Script</div>');

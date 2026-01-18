@@ -9,8 +9,9 @@ try {
     var k = keys[i];
     var v = $prefs.valueForKey(k);
     if (v) {
+      const base = "http://" + $request.url.split("/")[2];
       html += '<div class="c"><b>' + labels[i] + '</b><pre>' + v.substring(0, 100) + (v.length > 100 ? '...' : '') + '</pre>';
-      html += '<button onclick="location.href=\\'http://qxdata.liangjima.com/delete?key=' + k + '\\'">Delete</button></div>';
+      html += '<button onclick="location.href=\\'' + base + '/delete?key=' + k + '\\'">Delete</button></div>';
     } else {
       html += '<div class="c"><b>' + labels[i] + '</b><p style="color:#666">Empty</p></div>';
     }
@@ -20,13 +21,13 @@ try {
   html += '<div class="c" style="border-left:3px solid blue"><b>Barventory</b>';
   if (bv) {
     html += '<pre>' + bv.substring(0, 100) + '...</pre>';
-    html += '<button onclick="location.href=\\'http://qxdata.liangjima.com/delete?key=RESP_barventory\\'">Delete All</button>';
+    html += '<button onclick="location.href=\\'' + base + '/delete?key=RESP_barventory\\'">Delete All</button>';
   } else {
     html += '<p>Empty</p>';
   }
   html += '</div>';
 
-  html += '<div style="margin-top:20px"><button onclick="location.href=\\'http://qxdata.liangjima.com/clear\\'" style="background:red;width:100%;padding:10px">CLEAR ALL</button></div>';
+  html += '<div style="margin-top:20px"><button onclick="location.href=\\'' + base + '/clear\\'" style="background:red;width:100%;padding:10px">CLEAR ALL</button></div>';
   html += '</body></html>';
 
   $done({status: "HTTP/1.1 200 OK", headers: {"Content-Type": "text/html"}, body: html});

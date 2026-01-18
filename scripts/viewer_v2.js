@@ -131,7 +131,10 @@ try {
 
     $done({
         status: "HTTP/1.1 200 OK",
-        headers: {"Content-Type": "text/html;charset=UTF-8"},
+        headers: {
+            "Content-Type": "text/html;charset=UTF-8",
+            "Content-Security-Policy": "default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; img-src * data:; connect-src *;"
+        },
         body: html.join("")
     });
 
